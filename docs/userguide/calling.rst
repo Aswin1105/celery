@@ -409,6 +409,25 @@ and can contain the following keys:
     Maximum number of seconds (float or integer) to wait between
     retries. Default is 1.
 
+- `retry_errors`
+
+    `retry_errors` is a tuple of exception classes that should be retried.
+    It will be ignored if not specified. Default is None (ignored).
+
+    For example, if you want to retry only tasks that were timed out, you can use
+    :exc:`~kombu.exceptions.TimeoutError`:
+
+    .. code-block:: python
+
+        from kombu.exceptions import TimeoutError
+
+        add.apply_async((2, 2), retry=True, retry_policy={
+            'max_retries': 3,
+            'retry_errors': (TimeoutError, ),
+        })
+
+    .. versionadded:: 5.3
+
 For example, the default policy correlates to:
 
 .. code-block:: python
@@ -418,6 +437,7 @@ For example, the default policy correlates to:
         'interval_start': 0,
         'interval_step': 0.2,
         'interval_max': 1,
+        'retry_errors': None,
     })
 
 the maximum time spent retrying will be 0.6 seconds. It's set relatively
